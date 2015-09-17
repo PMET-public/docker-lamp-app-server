@@ -27,14 +27,14 @@ RUN cd /tmp && \
   apt-get -f install && \
   rm -rf /tmp/*
 
-# remove default sites, enable ssl, rewrite
+# remove default sites, set default server name, enable ssl, rewrite
 RUN rm -rf /etc/apache2/sites-available/* /etc/apache2/sites-enabled/* && \
+  sed -i.bak '1 i ServerName localhost' /etc/apache2/apache2.conf && \
   mkdir -p /var/lock/apache2 /var/run/apache2 && \
   a2enmod ssl && \
   ln -sf /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
   
 # runit apache2
-RUN mkdir -p /etc/service/apache2 && \
-  ln -sf /scripts/apache2.sh /etc/service/apache2/run
+COPY apache2.sh /etc/service/apache2/run
 
 EXPOSE 80 443
