@@ -14,6 +14,7 @@ RUN add-apt-repository ppa:ondrej/php5-5.6 && \
     php5-mysql \
     php5-intl \
     php5-xsl \
+    php5-xdebug \
     mysql-client \
     rsync && \
   apt-get --purge autoremove -y && \
@@ -27,14 +28,20 @@ RUN cd /tmp && \
   apt-get -f install && \
   rm -rf /tmp/*
 
-# remove default sites, set default server name, enable ssl, rewrite
+# remove default sites
+# enable ssl, rewrite
+# disable xdebug
 RUN rm -rf /etc/apache2/sites-available/* /etc/apache2/sites-enabled/* && \
-  sed -i.bak '1 i ServerName localhost' /etc/apache2/apache2.conf && \
   mkdir -p /var/lock/apache2 /var/run/apache2 && \
-  a2enmod ssl && \
-  ln -sf /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
+  a2enmod ssl rewrite && \
+  php5dismod xdebug
   
-# runit apache2
+COPY apache2.conf /etc/apache2/
+
 COPY apache2.sh /etc/service/apache2/run
+
+COPY xdebug.ini /etc/php5/mods-available/
+RUN echo -e "xdebug.remote_host=${XDEBUG_REMOTE_HOST:-127.0.0.1}
+xdebug.remote_port=${XDEBUG_REMOTE_PORT:-9000}" >> /etc/php5/mods-available/xdebug.ini
 
 EXPOSE 80 443
