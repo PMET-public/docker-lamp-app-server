@@ -9,9 +9,9 @@ Features:
 Available env vars:
 - INIT_SCRIPT
 - STARTUP_SCRIPT
-- WEB_SERVER_USER
-- XDEBUG_REMOTE_HOST
-- XDEBUG_REMOTE_PORT
+- WEB_SERVER_USER (www-data)
+- XDEBUG_REMOTE_HOST (127.0.0.1)
+- XDEBUG_REMOTE_PORT (9000)
 
 Available env vars due to docker link:
 - DB_ENV_DB_NAME

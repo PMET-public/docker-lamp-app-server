@@ -36,12 +36,12 @@ RUN rm -rf /etc/apache2/sites-available/* /etc/apache2/sites-enabled/* && \
   a2enmod ssl rewrite && \
   php5dismod xdebug
   
-COPY apache2.conf /etc/apache2/
+COPY apache2.conf envvars /etc/apache2/
 
 COPY apache2.sh /etc/service/apache2/run
 
 COPY xdebug.ini /etc/php5/mods-available/
-RUN echo -e "xdebug.remote_host=${XDEBUG_REMOTE_HOST:-127.0.0.1}
-xdebug.remote_port=${XDEBUG_REMOTE_PORT:-9000}" >> /etc/php5/mods-available/xdebug.ini
+RUN touch /var/log/xdebug.log && chown "${WEB_SERVER_USER:-www-data}" /var/log/xdebug.log && \
+  /bin/echo -e "xdebug.remote_host=${XDEBUG_REMOTE_HOST:-127.0.0.1}\nxdebug.remote_port=${XDEBUG_REMOTE_PORT:-9000}" >> /etc/php5/mods-available/xdebug.ini
 
 EXPOSE 80 443
