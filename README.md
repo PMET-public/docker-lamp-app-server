@@ -1,4 +1,4 @@
-# docker-lamp
+# docker-lamp-app-server
 
 This image creates an apache2 app server intended to communicate with a linked mysql compatible db server.
 
