@@ -24,7 +24,7 @@ RUN cd /tmp && \
   curl -O https://dl-ssl.google.com/dl/linux/direct/mod-pagespeed-beta_current_amd64.deb && \
   dpkg -i /tmp/mod-pagespeed-beta_current_amd64.deb && \
   apt-get -f install && \
-  rm /tmp/*
+  rm -rf /tmp/*
 
 # remove default sites, enable ssl, rewrite
 RUN rm -rf /etc/apache2/sites-available/* /etc/apache2/sites-enabled/* && \
