@@ -1,6 +1,8 @@
 FROM esepublic/baseimage
 MAINTAINER Keith Bentrup <kbentrup@ebay.com>
 
+ENV WEB_SERVER_USER=www-data XDEBUG_REMOTE_HOST=127.0.0.1 XDEBUG_REMOTE_PORT=9000
+
 RUN add-apt-repository ppa:ondrej/php5-5.6 && \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes apache2 \
@@ -41,7 +43,7 @@ COPY apache2.conf envvars /etc/apache2/
 COPY apache2.sh /etc/service/apache2/run
 
 COPY xdebug.ini /etc/php5/mods-available/
-RUN touch /var/log/xdebug.log && chown "${WEB_SERVER_USER:-www-data}" /var/log/xdebug.log && \
-  /bin/echo -e "xdebug.remote_host=${XDEBUG_REMOTE_HOST:-127.0.0.1}\nxdebug.remote_port=${XDEBUG_REMOTE_PORT:-9000}" >> /etc/php5/mods-available/xdebug.ini
+RUN touch /var/log/xdebug.log && chown "${WEB_SERVER_USER}" /var/log/xdebug.log && \
+  /bin/echo -e "xdebug.remote_host=${XDEBUG_REMOTE_HOST}\nxdebug.remote_port=${XDEBUG_REMOTE_PORT}" >> /etc/php5/mods-available/xdebug.ini
 
 EXPOSE 80 443
