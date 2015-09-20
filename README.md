@@ -7,8 +7,7 @@ Features:
 - xdebug included but not enabled
 
 Available env vars:
-- INIT_SCRIPT
-- STARTUP_SCRIPT
+- SETUP_SCRIPT
 - WEB_SERVER_USER (www-data)
 - XDEBUG_REMOTE_HOST (127.0.0.1)
 - XDEBUG_REMOTE_PORT (9000)
