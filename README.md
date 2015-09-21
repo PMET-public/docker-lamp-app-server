@@ -13,8 +13,8 @@ Available env vars:
 - XDEBUG_REMOTE_PORT (9000)
 
 Available env vars due to docker link:
-- DB_ENV_DB_NAME
-- DB_ENV_DB_USER
-- DB_ENV_DB_PASS
+- DB_SERVER_ENV_DB_NAME
+- DB_SERVER_ENV_DB_USER
+- DB_SERVER_ENV_DB_PASS
 
 Just add your apache configuration and your application via a volume and you're good to go.
