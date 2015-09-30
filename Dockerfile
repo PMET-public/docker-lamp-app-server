@@ -7,7 +7,12 @@ RUN add-apt-repository ppa:ondrej/php5-5.6 && \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes apache2 \
     libapache2-mod-php5 \
+    redis-tools \
+    git \
+    npm \
+    ruby \
     php5-cli \
+    php5-xdebug \
     php5-curl \
     php5-gd \
     php5-mcrypt \
@@ -16,12 +21,15 @@ RUN add-apt-repository ppa:ondrej/php5-5.6 && \
     php5-mysql \
     php5-intl \
     php5-xsl \
-    php5-xdebug \
+    unzip \
     mysql-client \
-    rsync && \
+    libxml2-utils && \
   apt-get --purge autoremove -y && \
   apt-get clean && \
-  rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
+  rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*  
+
+RUN curl -sS https://getcomposer.org/installer | php && \
+  mv composer.phar /usr/local/bin/composer
 
 # install mod_pagespeed
 RUN cd /tmp && \
@@ -31,12 +39,21 @@ RUN cd /tmp && \
   rm -rf /tmp/*
 
 # remove default sites
-# enable ssl, rewrite
+# enable ssl, rewrite, redis
 # disable xdebug
 RUN rm -rf /etc/apache2/sites-available/* /etc/apache2/sites-enabled/* && \
   mkdir -p /var/lock/apache2 /var/run/apache2 && \
   a2enmod ssl rewrite && \
+  pecl install redis && \
+  echo "extension=redis.so" > /etc/php5/mods-available/redis.ini && \
+  php5enmod redis  && \
   php5dismod xdebug
+
+# install webgrind for profiling
+ADD https://webgrind.googlecode.com/files/webgrind-release-1.0.zip /
+RUN unzip /webgrind-release-1.0.zip -d / && \
+  chown -R www-data:www-data /webgrind && \
+  chmod -R g+w /webgrind
   
 COPY apache2.conf envvars /etc/apache2/
 
