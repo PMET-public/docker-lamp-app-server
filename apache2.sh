@@ -3,4 +3,4 @@
 # runit script
 
 . /etc/apache2/envvars
-/usr/sbin/apache2 -D FOREGROUND
+exec /usr/sbin/apache2 -D NO_DETACH
