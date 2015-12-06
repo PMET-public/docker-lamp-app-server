@@ -31,13 +31,6 @@ RUN add-apt-repository ppa:ondrej/php5-5.6 && \
 RUN curl -sS https://getcomposer.org/installer | php && \
   mv composer.phar /usr/local/bin/composer
 
-# install mod_pagespeed
-RUN cd /tmp && \
-  curl -O https://dl-ssl.google.com/dl/linux/direct/mod-pagespeed-beta_current_amd64.deb && \
-  dpkg -i /tmp/mod-pagespeed-beta_current_amd64.deb && \
-  apt-get -f install && \
-  rm -rf /tmp/*
-
 # remove default sites
 # enable ssl, rewrite, redis
 # disable xdebug

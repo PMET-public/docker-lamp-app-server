@@ -3,7 +3,6 @@
 This image creates an apache2 app server intended to communicate with a linked mysql compatible db server.
 
 Features:
-- mod_pagespeed included
 - xdebug included but not enabled
 
 Available env vars:
