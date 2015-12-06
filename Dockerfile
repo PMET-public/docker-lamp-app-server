@@ -13,6 +13,15 @@ RUN apt-get update && \
     npm \
     ruby \
     php7-beta1 \
+    php5-cli \
+    php5-curl \
+    php5-gd \
+    php5-mcrypt \
+    php-pear \
+    php5-dev \
+    php5-mysql \
+    php5-intl \
+    php5-xsl \
     unzip \
     mysql-client \
     libxml2-utils && \
@@ -26,7 +35,8 @@ RUN mkdir -p /etc/apache2/conf.d/ && \
   touch /etc/apache2/conf.d/default.conf && \
   cp /usr/local/php7/libphp7.so /usr/lib/apache2/modules/ && \
   cp /usr/local/php7/php7.load /etc/apache2/mods-available/ && \
-  a2enmod php7
+  a2enmod php7 && \
+  php5enmod mcrypt
 
 RUN curl -sS https://getcomposer.org/installer | php && \
   mv composer.phar /usr/local/bin/composer
