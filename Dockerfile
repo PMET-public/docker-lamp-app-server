@@ -1,11 +1,12 @@
 FROM esepublic/baseimage
 MAINTAINER Keith Bentrup <kbentrup@ebay.com>
 
-ENV WEB_SERVER_USER=www-data XDEBUG_REMOTE_HOST=127.0.0.1 XDEBUG_REMOTE_PORT=9000
+ENV WEB_SERVER_USER=www-data
 
 RUN echo "deb http://repos.zend.com/zend-server/early-access/php7/repos ubuntu/" >> /etc/apt/sources.list
 
-RUN apt-get update && \
+RUN add-apt-repository ppa:ondrej/php5-5.6 && \
+  apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes apache2 \
     libapache2-mod-php5 \
     redis-tools \
