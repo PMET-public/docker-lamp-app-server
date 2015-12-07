@@ -36,6 +36,7 @@ RUN mkdir -p /etc/apache2/conf.d/ && \
   touch /etc/apache2/conf.d/default.conf && \
   cp /usr/local/php7/libphp7.so /usr/lib/apache2/modules/ && \
   cp /usr/local/php7/php7.load /etc/apache2/mods-available/ && \
+  a2dismod php5 && \
   a2enmod php7 && \
   php5enmod mcrypt
 
