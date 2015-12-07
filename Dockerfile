@@ -35,7 +35,9 @@ RUN curl -sS https://getcomposer.org/installer | php && \
 # enable ssl, rewrite, redis
 # disable xdebug
 RUN rm -rf /etc/apache2/sites-available/* /etc/apache2/sites-enabled/* && \
-  mkdir -p /var/lock/apache2 /var/run/apache2 && \
+  mkdir -p /var/lock/apache2 \
+  /var/run/apache2 \
+  /etc/apache2/conf.d && \
   a2enmod ssl rewrite && \
   pecl install redis && \
   echo "extension=redis.so" > /etc/php5/mods-available/redis.ini && \
