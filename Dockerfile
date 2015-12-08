@@ -38,7 +38,9 @@ RUN rm -rf /etc/apache2/sites-available/* /etc/apache2/sites-enabled/* && \
   mkdir -p /var/lock/apache2 \
   /var/run/apache2 \
   /etc/apache2/conf.d && \
-  a2enmod ssl rewrite && \
+  a2enmod ssl \
+    rewrite \
+    headers && \
   pecl install redis && \
   echo "extension=redis.so" > /etc/php5/mods-available/redis.ini && \
   php5enmod redis  && \
