@@ -38,7 +38,9 @@ RUN mkdir -p /etc/apache2/conf.d/ && \
   cp /usr/local/php7/php7.load /etc/apache2/mods-available/ && \
   a2dismod php5 && \
   a2enmod php7 \
-    headers && \
+    headers \
+    ssl \
+    rewrite && \
   php5enmod mcrypt
 
 RUN curl -sS https://getcomposer.org/installer | php && \
