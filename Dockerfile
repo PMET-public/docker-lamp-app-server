@@ -40,7 +40,8 @@ RUN rm -rf /etc/apache2/sites-available/* /etc/apache2/sites-enabled/* && \
   /etc/apache2/conf.d && \
   a2enmod ssl \
     rewrite \
-    headers && \
+    headers \
+    expires && \
   pecl install redis && \
   echo "extension=redis.so" > /etc/php5/mods-available/redis.ini && \
   php5enmod redis  && \
