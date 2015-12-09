@@ -40,7 +40,8 @@ RUN mkdir -p /etc/apache2/conf.d/ && \
   a2enmod php7 \
     headers \
     ssl \
-    rewrite && \
+    rewrite \
+    expires && \
   php5enmod mcrypt
 
 RUN curl -sS https://getcomposer.org/installer | php && \
