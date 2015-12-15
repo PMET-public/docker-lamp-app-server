@@ -30,6 +30,7 @@ RUN add-apt-repository ppa:ondrej/php5-5.6 && \
   apt-get clean && \
   rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*  
 
+COPY php.ini /usr/local/php7/etc/
 COPY php7.conf /etc/apache2/mods-available/
 
 RUN mkdir -p /etc/apache2/conf.d/ && \
