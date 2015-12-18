@@ -45,8 +45,11 @@ RUN mkdir -p /etc/apache2/conf.d/ && \
     expires && \
   php5enmod mcrypt
 
-RUN ln -sf /usr/local/php7/bin/php /usr/bin/php && \ 
-  curl -sS https://getcomposer.org/installer | php && \
+# RUN ln -sf /usr/local/php7/bin/php /usr/bin/php && \ 
+# can make php7 the default cmd line when the php5 extensions are available or linked to it to prevent errors like
+# "The requested PHP extension ext-xsl * is missing from your system. Install or enable PHP's xsl extension"
+
+RUN curl -sS https://getcomposer.org/installer | php && \
   mv composer.phar /usr/local/bin/composer
 
 # remove default sites
