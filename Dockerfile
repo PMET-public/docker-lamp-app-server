@@ -45,7 +45,8 @@ RUN mkdir -p /etc/apache2/conf.d/ && \
     expires && \
   php5enmod mcrypt
 
-RUN curl -sS https://getcomposer.org/installer | php && \
+RUN ln -sf /usr/local/php7/bin/php /usr/bin/php && \ 
+  curl -sS https://getcomposer.org/installer | php && \
   mv composer.phar /usr/local/bin/composer
 
 # remove default sites
