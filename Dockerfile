@@ -25,7 +25,8 @@ RUN add-apt-repository ppa:ondrej/php5-5.6 && \
     php5-xsl \
     unzip \
     mysql-client \
-    libxml2-utils && \
+    libxml2-utils \
+    wget && \
   apt-get --purge autoremove -y && \
   apt-get clean && \
   rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*  
