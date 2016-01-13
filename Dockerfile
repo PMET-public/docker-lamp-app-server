@@ -23,6 +23,7 @@ RUN add-apt-repository ppa:ondrej/php5-5.6 && \
     php5-mysql \
     php5-intl \
     php5-xsl \
+    php5-xdebug \
     unzip \
     mysql-client \
     libxml2-utils \
@@ -44,7 +45,8 @@ RUN mkdir -p /etc/apache2/conf.d/ && \
     ssl \
     rewrite \
     expires && \
-  php5enmod mcrypt
+  php5enmod mcrypt && \
+  ln -sf /usr/local/php7/bin/php /usr/bin/php
 
 # RUN ln -sf /usr/local/php7/bin/php /usr/bin/php && \ 
 # can make php7 the default cmd line when the php5 extensions are available or linked to it to prevent errors like
@@ -54,10 +56,8 @@ RUN curl -sS https://getcomposer.org/installer | php && \
   mv composer.phar /usr/local/bin/composer
 
 # remove default sites
-# enable ssl, rewrite
 RUN rm -rf /etc/apache2/sites-available/* /etc/apache2/sites-enabled/* && \
-  mkdir -p /var/lock/apache2 /var/run/apache2 && \
-  a2enmod ssl rewrite 
+  mkdir -p /var/lock/apache2 /var/run/apache2
   
 COPY apache2.conf envvars /etc/apache2/
 COPY apache2.sh /etc/service/apache2/run
