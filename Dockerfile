@@ -3,21 +3,21 @@ MAINTAINER Keith Bentrup <kbentrup@ebay.com>
 
 ENV WEB_SERVER_USER=www-data
 
-RUN add-apt-repository ppa:ondrej/php && \
+RUN add-apt-repository ppa:ondrej/php-7.0 && \
   apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes apache2 \
-    libapache2-mod-php7.0 \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes \
     redis-tools \
     git \
     npm \
     ruby \
-    php7.0 \
-    php7.0-cli \
-    php7.0-curl \
+    apache2 \
+    libapache2-mod-php7.0 \
+    php7.0  \
+    php7.0-common \
     php7.0-gd \
-    php7.0-mcrypt \
-    php7.0-dev \
     php7.0-mysql \
+    php7.0-mcrypt \
+    php7.0-curl \
     php7.0-intl \
     php7.0-xsl \
     unzip \
@@ -36,8 +36,7 @@ RUN mkdir -p /etc/apache2/conf.d/ && \
   a2enmod headers \
     ssl \
     rewrite \
-    expires && \
-  phpenmod mcrypt
+    expires
 
 # RUN ln -sf /usr/local/php7/bin/php /usr/bin/php && \ 
 # can make php7 the default cmd line when the php5 extensions are available or linked to it to prevent errors like
