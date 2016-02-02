@@ -24,6 +24,9 @@ RUN add-apt-repository ppa:ondrej/php-7.0 && \
     unzip \
     mysql-client \
     libxml2-utils \
+    default-jre \
+    rdfind \
+    symlinks \
     wget && \
   apt-get --purge autoremove -y && \
   apt-get clean && \
@@ -40,6 +43,10 @@ RUN mkdir -p /etc/apache2/conf.d/ \
     ssl \
     rewrite \
     expires
+
+# add yui compress for css min and closure compiler for js
+ADD https://github.com/yui/yuicompressor/releases/download/v2.4.8/yuicompressor-2.4.8.jar /yuicompressor.jar
+RUN wget http://dl.google.com/closure-compiler/compiler-20151216.tar.gz -O - | tar -xz compiler.jar
 
 RUN curl -sS https://getcomposer.org/installer | php && \
   mv composer.phar /usr/local/bin/composer
