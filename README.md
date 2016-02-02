@@ -2,9 +2,14 @@
 
 This image creates an apache2 app server intended to communicate with a linked mysql compatible db server.
 
+Features:
+- xdebug included but not enabled
+
 Available env vars:
 - SETUP_SCRIPT
 - WEB_SERVER_USER (www-data)
+- XDEBUG_REMOTE_HOST (127.0.0.1)
+- XDEBUG_REMOTE_PORT (9000)
 
 Available env vars due to docker link:
 - DB_SERVER_ENV_DB_NAME
