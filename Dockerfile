@@ -1,7 +1,7 @@
 FROM esepublic/baseimage
 MAINTAINER Keith Bentrup <kbentrup@ebay.com>
 
-ENV WEB_SERVER_USER=www-data
+ENV WEB_SERVER_USER=www-data XDEBUG_REMOTE_HOST=127.0.0.1 XDEBUG_REMOTE_PORT=9000
 
 RUN add-apt-repository ppa:ondrej/php-7.0 && \
   apt-get update && \
@@ -20,34 +20,29 @@ RUN add-apt-repository ppa:ondrej/php-7.0 && \
     php7.0-curl \
     php7.0-intl \
     php7.0-xsl \
+    php-xdebug \
     unzip \
     mysql-client \
     libxml2-utils \
     wget && \
   apt-get --purge autoremove -y && \
   apt-get clean && \
-  rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*  
+  rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
 
-COPY php.ini /usr/local/php7/etc/
-COPY php7.conf /etc/apache2/mods-available/
-
-RUN mkdir -p /etc/apache2/conf.d/ && \
+# remove default sites and ensure dirs exist
+RUN mkdir -p /etc/apache2/conf.d/ \
+  /var/lock/apache2 \
+  /var/run/apache2 && \
+  rm -rf /etc/apache2/sites-available/* \
+  /etc/apache2/sites-enabled/* \
   touch /etc/apache2/conf.d/default.conf && \
   a2enmod headers \
     ssl \
     rewrite \
     expires
 
-# RUN ln -sf /usr/local/php7/bin/php /usr/bin/php && \ 
-# can make php7 the default cmd line when the php5 extensions are available or linked to it to prevent errors like
-# "The requested PHP extension ext-xsl * is missing from your system. Install or enable PHP's xsl extension"
-
 RUN curl -sS https://getcomposer.org/installer | php && \
   mv composer.phar /usr/local/bin/composer
-
-# remove default sites
-RUN rm -rf /etc/apache2/sites-available/* /etc/apache2/sites-enabled/* && \
-  mkdir -p /var/lock/apache2 /var/run/apache2
   
 COPY apache2.conf envvars /etc/apache2/
 COPY apache2.sh /etc/service/apache2/run
