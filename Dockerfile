@@ -3,7 +3,7 @@ MAINTAINER Keith Bentrup <kbentrup@ebay.com>
 
 ENV WEB_SERVER_USER=www-data XDEBUG_REMOTE_HOST=127.0.0.1 XDEBUG_REMOTE_PORT=9000
 
-RUN add-apt-repository ppa:ondrej/php-7.0 && \
+RUN add-apt-repository ppa:ondrej/php && \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes \
     redis-tools \
