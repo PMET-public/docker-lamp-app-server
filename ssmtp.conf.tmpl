@@ -1,0 +1,13 @@
+# can interpolate this file with: eval "echo \"$(< $0)\""
+
+# mail recipient for userids < 1000
+# root=someaddress@gmail.com
+mailhub=smtp.gmail.com:587
+rewriteDomain=$(hostname)
+hostname=$(hostname)
+UseTLS=YES
+UseSTARTTLS=YES
+AuthMethod=LOGIN
+AuthUser=GMAIL_USERNAME_FOR_SSMTP@gmail.com
+AuthPass=GMAIL_PASSWORD_FOR_SSMTP
+FromLineOverride=YES

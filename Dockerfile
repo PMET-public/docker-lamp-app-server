@@ -27,6 +27,7 @@ RUN add-apt-repository ppa:ondrej/php-7.0 && \
     default-jre \
     rdfind \
     symlinks \
+    ssmtp \
     wget && \
   apt-get --purge autoremove -y && \
   apt-get clean && \
@@ -53,5 +54,6 @@ RUN curl -sS https://getcomposer.org/installer | php && \
   
 COPY apache2.conf envvars /etc/apache2/
 COPY apache2.sh /etc/service/apache2/run
+COPY ssmtp.conf.tmpl /etc/ssmtp/
 
 EXPOSE 80 443
