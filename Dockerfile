@@ -20,6 +20,9 @@ RUN add-apt-repository ppa:ondrej/php && \
     php7.0-curl \
     php7.0-intl \
     php7.0-xsl \
+    php7.0-mbstring \
+    php7.0-zip \
+    php7.0-bcmath \
     php-xdebug \
     unzip \
     mysql-client \
