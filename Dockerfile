@@ -30,6 +30,7 @@ RUN add-apt-repository ppa:ondrej/php && \
     default-jre \
     rdfind \
     symlinks \
+    ssmtp \
     wget && \
   apt-get --purge autoremove -y && \
   apt-get clean && \
