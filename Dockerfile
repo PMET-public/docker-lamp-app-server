@@ -1,5 +1,5 @@
-FROM esepublic/baseimage
-MAINTAINER Keith Bentrup <kbentrup@ebay.com>
+FROM phusion/baseimage
+MAINTAINER Keith Bentrup <kbentrup@magento.com>
 
 ENV WEB_SERVER_USER=www-data XDEBUG_REMOTE_HOST=127.0.0.1 XDEBUG_REMOTE_PORT=9000
 
@@ -57,5 +57,6 @@ RUN curl -sS https://getcomposer.org/installer | php && \
   
 COPY apache2.conf envvars /etc/apache2/
 COPY apache2.sh /etc/service/apache2/run
+COPY setup-via-env.sh /etc/my_init.d/
 
 EXPOSE 80 443
