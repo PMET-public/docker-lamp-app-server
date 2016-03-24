@@ -3,12 +3,18 @@ MAINTAINER Keith Bentrup <kbentrup@magento.com>
 
 ENV WEB_SERVER_USER=www-data XDEBUG_REMOTE_HOST=127.0.0.1 XDEBUG_REMOTE_PORT=9000
 
+RUN curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
+  echo 'deb https://deb.nodesource.com/node_5.x trusty main' > /etc/apt/sources.list.d/nodesource.list && \
+  echo 'deb-src https://deb.nodesource.com/node_5.x trusty main' >> /etc/apt/sources.list.d/nodesource.list
+
 RUN add-apt-repository ppa:ondrej/php && \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes \
     redis-tools \
     git \
-    npm \
+    nodejs \
+    make \
+    g++ \
     ruby \
     apache2 \
     libapache2-mod-php7.0 \
