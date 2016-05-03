@@ -23,7 +23,7 @@ RUN add-apt-repository ppa:ondrej/php && \
     php7.0-mbstring \
     php7.0-zip \
     php7.0-bcmath \
-    php-xdebug \
+    php7.0-xdebug \
     unzip \
     mysql-client \
     libxml2-utils \
