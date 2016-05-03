@@ -12,7 +12,7 @@ RUN add-apt-repository ppa:ondrej/php && \
     ruby \
     apache2 \
     libapache2-mod-php7.0 \
-    php7.0  \
+    php7.0 \
     php7.0-common \
     php7.0-gd \
     php7.0-mysql \
