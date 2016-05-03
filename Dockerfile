@@ -1,7 +1,7 @@
 FROM esepublic/baseimage:0.9.18
 MAINTAINER Keith Bentrup <kbentrup@magento.com>
 
-ENV WEB_SERVER_USER=www-data XDEBUG_REMOTE_HOST=127.0.0.1 XDEBUG_REMOTE_PORT=9000
+ENV WEB_SERVER_USER=www-data
 
 RUN add-apt-repository ppa:ondrej/php && \
   apt-get update && \
@@ -46,7 +46,9 @@ RUN mkdir -p /etc/apache2/conf.d/ \
   a2enmod headers \
     ssl \
     rewrite \
-    expires
+    expires && \
+  phpdismod xdebug && \
+  phpenmod opcache
 
 # add yui compress for css min and closure compiler for js
 ADD https://github.com/yui/yuicompressor/releases/download/v2.4.8/yuicompressor-2.4.8.jar /yuicompressor.jar
