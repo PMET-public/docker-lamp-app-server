@@ -54,9 +54,14 @@ RUN mkdir -p /etc/apache2/conf.d/ \
 ADD https://github.com/yui/yuicompressor/releases/download/v2.4.8/yuicompressor-2.4.8.jar /yuicompressor.jar
 RUN wget http://dl.google.com/closure-compiler/compiler-20151216.tar.gz -O - | tar -xz compiler.jar
 
+
+# add composer
 RUN curl -sS https://getcomposer.org/installer | php && \
   mv composer.phar /usr/local/bin/composer
   
+# prevent extraneous logging from cron
+RUN sed -i.bak 's/f_syslog3 { not facility( auth/f_syslog3 { not facility( cron, auth/' /etc/syslog-ng/syslog-ng.conf
+
 COPY apache2.conf envvars /etc/apache2/
 COPY apache2.sh /etc/service/apache2/run
 
