@@ -60,7 +60,7 @@ RUN curl -sS https://getcomposer.org/installer | php && \
   mv composer.phar /usr/local/bin/composer
   
 # prevent extraneous logging from cron
-RUN sed -i.bak 's/f_syslog3 { not facility( auth/f_syslog3 { not facility( cron, auth/' /etc/syslog-ng/syslog-ng.conf
+RUN sed -i.bak 's/f_syslog3 { not facility(auth/f_syslog3 { not facility(cron, auth/' /etc/syslog-ng/syslog-ng.conf
 
 COPY apache2.conf envvars /etc/apache2/
 COPY apache2.sh /etc/service/apache2/run
