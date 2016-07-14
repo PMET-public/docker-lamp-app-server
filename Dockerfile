@@ -3,34 +3,28 @@ MAINTAINER Keith Bentrup <kbentrup@magento.com>
 
 ENV WEB_SERVER_USER=www-data
 
-RUN add-apt-repository ppa:ondrej/php && \
+RUN add-apt-repository ppa:ondrej/php5-5.6 && \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes \
+    apache2 \
+    libapache2-mod-php5 \
     redis-tools \
     git \
     npm \
     ruby \
-    apache2 \
-    libapache2-mod-php7.0 \
-    php7.0 \
-    php7.0-common \
-    php7.0-gd \
-    php7.0-mysql \
-    php7.0-mcrypt \
-    php7.0-curl \
-    php7.0-intl \
-    php7.0-xsl \
-    php7.0-mbstring \
-    php7.0-zip \
-    php7.0-bcmath \
-    php7.0-xdebug \
+    php5-cli \
+    php5-xdebug \
+    php5-curl \
+    php5-gd \
+    php5-mcrypt \
+    php-pear \
+    php5-dev \
+    php5-mysql \
+    php5-intl \
+    php5-xsl \
     unzip \
     mysql-client \
     libxml2-utils \
-    default-jre \
-    rdfind \
-    symlinks \
-    ssmtp \
     wget && \
   apt-get --purge autoremove -y && \
   apt-get clean && \
