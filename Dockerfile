@@ -41,8 +41,8 @@ RUN mkdir -p /etc/apache2/conf.d/ \
     ssl \
     rewrite \
     expires && \
-  phpdismod xdebug && \
-  phpenmod opcache
+  php5dismod xdebug && \
+  php5enmod opcache
 
 # add yui compress for css min and closure compiler for js
 ADD https://github.com/yui/yuicompressor/releases/download/v2.4.8/yuicompressor-2.4.8.jar /yuicompressor.jar
