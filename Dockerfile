@@ -1,4 +1,4 @@
-FROM esepublic/baseimage:0.9.18
+FROM pmetpublic/baseimage:0.9.18
 MAINTAINER Keith Bentrup <kbentrup@magento.com>
 
 ENV WEB_SERVER_USER=www-data
