@@ -48,6 +48,7 @@ RUN mkdir -p /etc/apache2/conf.d/ \
     rewrite \
     expires && \
   phpdismod xdebug && \
+  (find /usr/lib/php -name "xdebug.so" | sort | tail -1 | tee /etc/php/7.0/cli/conf.d/xdebug-path.ini > /etc/php/7.0/apache2/conf.d/xdebug-path.ini) && \
   phpenmod opcache
 
 # add yui compress for css min and closure compiler for js
