@@ -26,16 +26,20 @@ RUN add-apt-repository ppa:ondrej/php && \
     mysql-client \
     libxml2-utils \
     ssmtp \
-    a2enmod headers \
+    wget && \
+  a2enmod headers \
     ssl \
     rewrite \
     expires && \
-    phpdismod xdebug && \
-    (find /usr/lib/php -name "xdebug.so" | sort | tail -1 | sed 's/^/zend_extension=/' | tee /etc/php/7.0/cli/conf.d/xdebug-path.ini > /etc/php/7.0/apache2/conf.d/xdebug-path.ini) && \
-    phpenmod opcache
+  phpdismod xdebug && \
+  (find /usr/lib/php -name "xdebug.so" | sort | tail -1 | sed 's/^/zend_extension=/' | tee /etc/php/7.0/cli/conf.d/xdebug-path.ini > /etc/php/7.0/apache2/conf.d/xdebug-path.ini) && \
+  phpenmod opcache && \
   apt-get --purge autoremove -y && \
   apt-get clean && \
   rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
+
+# remove default sites and ensure dirs exist
+RUN 
 
 # add composer
 RUN curl -sS https://getcomposer.org/installer | php && \
