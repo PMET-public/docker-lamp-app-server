@@ -31,6 +31,8 @@ RUN add-apt-repository ppa:ondrej/php && \
     ssl \
     rewrite \
     expires && \
+  rm /etc/apache2/sites-enabled/* && \
+  `# find correct xdebug.so path` && \
   (find /usr/lib/php -name "xdebug.so" | sort | tail -1 | sed 's/^/zend_extension=/' > /etc/php/7.0/mods-available/xdebug.ini) && \
   phpdismod xdebug && \
   phpenmod opcache && \
@@ -46,5 +48,6 @@ RUN curl -sS https://getcomposer.org/installer | php && \
 RUN sed -i.bak 's/f_syslog3 { not facility(auth/f_syslog3 { not facility(cron, auth/' /etc/syslog-ng/syslog-ng.conf
 
 COPY apache2.sh /etc/service/apache2/run
+COPY randomize-cron-start.sh /etc/my_init.d/
 
 EXPOSE 80 443
