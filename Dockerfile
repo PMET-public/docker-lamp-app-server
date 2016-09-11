@@ -1,7 +1,9 @@
 FROM pmetpublic/baseimage:0.9.18
 MAINTAINER Keith Bentrup <kbentrup@magento.com>
 
-RUN add-apt-repository ppa:ondrej/php && \
+RUN curl -S https://packagecloud.io/gpg.key | sudo apt-key add - && \
+  echo "deb http://packages.blackfire.io/debian any main" | sudo tee /etc/apt/sources.list.d/blackfire.list && \
+  add-apt-repository ppa:ondrej/php && \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes \
     redis-tools \
@@ -26,6 +28,8 @@ RUN add-apt-repository ppa:ondrej/php && \
     mysql-client \
     libxml2-utils \
     ssmtp \
+    blackfire-agent \
+    blackfire-php \
     wget && \
   `# prevent extraneous logging from cron` && \  
   sed -i.bak 's/f_syslog3 { not facility(auth/f_syslog3 { not facility(cron, auth/' /etc/syslog-ng/syslog-ng.conf && \
@@ -38,6 +42,8 @@ RUN add-apt-repository ppa:ondrej/php && \
   (find /usr/lib/php -name "xdebug.so" | sort | tail -1 | sed 's/^/zend_extension=/' > /etc/php/7.0/mods-available/xdebug.ini) && \
   phpdismod xdebug && \
   phpenmod opcache && \
+  printf "#!/bin/sh\n/etc/init.d/blackfire-agent start" > /etc/my_init.d/blackfire.sh && \
+  chmod +x /etc/my_init.d/blackfire.sh && \
   apt-get --purge autoremove -y && \
   apt-get clean && \
   rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
