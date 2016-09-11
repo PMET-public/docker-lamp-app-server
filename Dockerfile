@@ -27,6 +27,8 @@ RUN add-apt-repository ppa:ondrej/php && \
     libxml2-utils \
     ssmtp \
     wget && \
+  `# prevent extraneous logging from cron` && \  
+  sed -i.bak 's/f_syslog3 { not facility(auth/f_syslog3 { not facility(cron, auth/' /etc/syslog-ng/syslog-ng.conf && \
   a2enmod headers \
     ssl \
     rewrite \
@@ -43,9 +45,6 @@ RUN add-apt-repository ppa:ondrej/php && \
 # add composer
 RUN curl -sS https://getcomposer.org/installer | php && \
   mv composer.phar /usr/local/bin/composer
-  
-# prevent extraneous logging from cron
-RUN sed -i.bak 's/f_syslog3 { not facility(auth/f_syslog3 { not facility(cron, auth/' /etc/syslog-ng/syslog-ng.conf
 
 COPY apache2.sh /etc/service/apache2/run
 COPY randomize-cron-start.sh /etc/my_init.d/
