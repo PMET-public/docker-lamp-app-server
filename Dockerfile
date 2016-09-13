@@ -33,7 +33,10 @@ RUN add-apt-repository ppa:ondrej/php && \
     ssl \
     rewrite \
     expires && \
+  `# remove default sites` && \  
   rm /etc/apache2/sites-enabled/* && \
+  `# remove default dirs` && \
+  perl -i -pe 'BEGIN{undef $/;} s/\n<Dir.*?\n<\/Dir.*?\n//smg' apache2.conf && \
   `# find correct xdebug.so path` && \
   (find /usr/lib/php -name "xdebug.so" | sort | tail -1 | sed 's/^/zend_extension=/' > /etc/php/7.0/mods-available/xdebug.ini) && \
   phpdismod xdebug && \
