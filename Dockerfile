@@ -5,7 +5,8 @@ RUN curl -S https://packagecloud.io/gpg.key | sudo apt-key add - && \
   echo "deb http://packages.blackfire.io/debian any main" | sudo tee /etc/apt/sources.list.d/blackfire.list && \
   add-apt-repository ppa:ondrej/php && \
   apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    --force-yes \
     redis-tools \
     git \
     npm \
