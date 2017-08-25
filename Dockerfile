@@ -12,19 +12,19 @@ RUN curl -S https://packagecloud.io/gpg.key | sudo apt-key add - && \
     npm \
     ruby \
     apache2 \
-    libapache2-mod-php7.1 \
-    php7.1 \
-    php7.1-common \
-    php7.1-gd \
-    php7.1-mysql \
-    php7.1-mcrypt \
-    php7.1-curl \
-    php7.1-intl \
-    php7.1-xsl \
-    php7.1-mbstring \
-    php7.1-zip \
-    php7.1-bcmath \
-    php-xdebug \
+    libapache2-mod-php7.0 \
+    php7.0 \
+    php7.0-common \
+    php7.0-gd \
+    php7.0-mysql \
+    php7.0-mcrypt \
+    php7.0-curl \
+    php7.0-intl \
+    php7.0-xsl \
+    php7.0-mbstring \
+    php7.0-zip \
+    php7.0-bcmath \
+    php7.0-xdebug \
     unzip \
     mysql-client \
     libxml2-utils \
@@ -58,5 +58,9 @@ RUN curl -sS https://getcomposer.org/installer | php && \
 
 COPY apache2.sh /etc/service/apache2/run
 COPY randomize-cron-start.sh /etc/my_init.d/
+# built this version of xdebug for latest debian updates based on these instructions
+# 1) copy output of php -i to https://xdebug.org/wizard.php
+# 2) download and build xdebug module using displayed results
+COPY xdebug.so /usr/lib/php/20160303/
 
 EXPOSE 80 443
