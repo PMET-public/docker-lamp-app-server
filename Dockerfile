@@ -25,6 +25,7 @@ RUN curl -S https://packagecloud.io/gpg.key | sudo apt-key add - && \
     php7.0-zip \
     php7.0-bcmath \
     php7.0-xdebug \
+    php7.0-soap \
     unzip \
     mysql-client \
     libxml2-utils \
