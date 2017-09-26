@@ -11,6 +11,7 @@ RUN curl -S https://packagecloud.io/gpg.key | sudo apt-key add - && \
     git \
     npm \
     ruby \
+    ruby-dev \
     apache2 \
     libapache2-mod-php7.0 \
     php7.0 \
@@ -52,6 +53,9 @@ RUN curl -S https://packagecloud.io/gpg.key | sudo apt-key add - && \
   apt-get --purge autoremove -y && \
   apt-get clean && \
   rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
+
+# add amqp-utils
+RUN gem install amqp-utils
 
 # add composer
 RUN curl -sS https://getcomposer.org/installer | php && \
