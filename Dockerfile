@@ -33,6 +33,7 @@ RUN curl -S https://packagecloud.io/gpg.key | sudo apt-key add - && \
     ssmtp \
     blackfire-agent \
     blackfire-php \
+    strace \
     wget && \
   `# prevent extraneous logging from cron` && \  
   sed -i.bak 's/f_syslog3 { not facility(auth/f_syslog3 { not facility(cron, auth/' /etc/syslog-ng/syslog-ng.conf && \
@@ -55,7 +56,8 @@ RUN curl -S https://packagecloud.io/gpg.key | sudo apt-key add - && \
   rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
 
 # add amqp-utils
-RUN gem install amqp-utils
+RUN gem install amqp-utils && \
+  echo 'export PATH="${PATH}:/var/lib/gems/1.9.1/gems/amqp-utils-0.5.1/bin/"' >> /root/.bashrc
 
 # add composer
 RUN curl -sS https://getcomposer.org/installer | php && \
