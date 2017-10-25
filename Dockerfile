@@ -4,6 +4,7 @@ MAINTAINER Keith Bentrup <kbentrup@magento.com>
 RUN curl -S https://packagecloud.io/gpg.key | sudo apt-key add - && \
   echo "deb http://packages.blackfire.io/debian any main" | sudo tee /etc/apt/sources.list.d/blackfire.list && \
   add-apt-repository ppa:ondrej/php && \
+  add-apt-repository ppa:certbot/certbot && \ 
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y \
     --force-yes \
@@ -34,6 +35,7 @@ RUN curl -S https://packagecloud.io/gpg.key | sudo apt-key add - && \
     blackfire-agent \
     blackfire-php \
     strace \
+    certbot \
     wget && \
   `# prevent extraneous logging from cron` && \  
   sed -i.bak 's/f_syslog3 { not facility(auth/f_syslog3 { not facility(cron, auth/' /etc/syslog-ng/syslog-ng.conf && \
