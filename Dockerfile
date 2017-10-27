@@ -36,6 +36,7 @@ RUN curl -S https://packagecloud.io/gpg.key | sudo apt-key add - && \
     blackfire-php \
     strace \
     certbot \
+    python-yaml \
     wget && \
   `# prevent extraneous logging from cron` && \  
   sed -i.bak 's/f_syslog3 { not facility(auth/f_syslog3 { not facility(cron, auth/' /etc/syslog-ng/syslog-ng.conf && \
