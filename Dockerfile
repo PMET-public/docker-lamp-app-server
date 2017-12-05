@@ -66,6 +66,9 @@ RUN gem install amqp-utils && \
 RUN curl -sS https://getcomposer.org/installer | php && \
   mv composer.phar /usr/local/bin/composer
 
+# disable ssmtp by default
+RUN mv /usr/sbin/ssmtp /usr/sbin/ssmtp.disabled
+
 COPY apache2.sh /etc/service/apache2/run
 COPY randomize-cron-start.sh /etc/my_init.d/
 # built this version of xdebug for latest debian updates based on these instructions
