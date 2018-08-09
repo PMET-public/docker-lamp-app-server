@@ -14,20 +14,20 @@ RUN curl -S https://packagecloud.io/gpg.key | sudo apt-key add - && \
     ruby \
     ruby-dev \
     apache2 \
-    libapache2-mod-php7.0 \
-    php7.0 \
-    php7.0-common \
-    php7.0-gd \
-    php7.0-mysql \
-    php7.0-mcrypt \
-    php7.0-curl \
-    php7.0-intl \
-    php7.0-xsl \
-    php7.0-mbstring \
-    php7.0-zip \
-    php7.0-bcmath \
-    php7.0-xdebug \
-    php7.0-soap \
+    libapache2-mod-php7.1 \
+    php7.1 \
+    php7.1-common \
+    php7.1-gd \
+    php7.1-mysql \
+    php7.1-mcrypt \
+    php7.1-curl \
+    php7.1-intl \
+    php7.1-xsl \
+    php7.1-mbstring \
+    php7.1-zip \
+    php7.1-bcmath \
+    php7.1-xdebug \
+    php7.1-soap \
     unzip \
     mysql-client \
     libxml2-utils \
@@ -49,7 +49,7 @@ RUN curl -S https://packagecloud.io/gpg.key | sudo apt-key add - && \
   `# remove default dirs` && \
   perl -i -pe 'BEGIN{undef $/;} s/\n<Dir.*?\n<\/Dir.*?\n//smg' /etc/apache2/apache2.conf && \
   `# find correct xdebug.so path` && \
-  (find /usr/lib/php -name "xdebug.so" | sort | tail -1 | sed 's/^/zend_extension=/' > /etc/php/7.0/mods-available/xdebug.ini) && \
+  (find /usr/lib/php -name "xdebug.so" | sort | tail -1 | sed 's/^/zend_extension=/' > /etc/php/7.1/mods-available/xdebug.ini) && \
   phpdismod xdebug && \
   phpenmod opcache && \
   printf "#!/bin/sh\n/etc/init.d/blackfire-agent start\n" > /etc/my_init.d/blackfire.sh && \
