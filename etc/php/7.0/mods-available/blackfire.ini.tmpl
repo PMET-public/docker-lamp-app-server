@@ -1,0 +1,7 @@
+; priority=90
+[blackfire]
+extension=blackfire.so
+blackfire.agent_socket = "tcp://blackfire.platform.sh:8307"
+blackfire.agent_timeout = 10
+blackfire.server_id = ${extension["configuration"].get("server_id", "")}
+blackfire.server_token = ${extension["configuration"].get("server_token", "")}

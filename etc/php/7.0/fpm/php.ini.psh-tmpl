@@ -1,0 +1,35 @@
+; ============== Common configuration.
+
+${php_common_config}
+
+; ============== Configuration for the FPM SAPI.
+
+; Error logging.
+error_log=/var/log/app.log
+
+; Limits.
+max_execution_time=300
+max_input_time=60
+memory_limit=128M
+post_max_size=64M
+upload_max_filesize=64M
+max_file_uploads=20
+max_input_vars=3000
+
+; Disable parsing of `.user.ini` files.
+; (we support customizing `php.ini` itself,
+; so this is unecessary.)
+user_ini.filename =
+
+; Sessions.
+session.save_path=/tmp/sessions
+
+% for comment, config in php_extensions:
+; =============== ${comment}
+${config}
+% endfor
+
+% if php_custom_config:
+; =============== Custom configuration.
+${php_custom_config}
+% endif

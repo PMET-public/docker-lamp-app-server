@@ -1,0 +1,367 @@
+% if nginx is not None:
+<%!
+    def override(*args, **kwargs):
+        """
+        Override values in each of the mapping passed in `args`,
+        and then with the lose keys specified in `kwargs`.
+
+            override(block, subblock, allow=True)
+        """
+        output = {}
+        for arg in args:
+          output.update(arg)
+        for k, v in kwargs.iteritems():
+          output[k] = v
+        return output
+
+    def expires_to_seconds(expire):
+        if expire is None:
+            return -1
+
+        try:
+            return int(expire)
+        except ValueError:
+            # expire is a string with a unit suffix
+            pass
+
+        suffixes = [
+            ("s", 1),
+            ("m", 60),
+            ("h", 60 * 60),
+            ("d", 24 * 60 * 60),
+            ("w", 7 * 24 * 60 * 60),
+            ("M", 30 * 24 * 60 * 60),
+            ("y", 365 * 24 * 60 * 60),
+        ]
+
+        for suffix, unit in suffixes:
+            if expire.endswith(suffix):
+                expire = expire[:-1]
+                break
+        else:
+            unit = 1
+
+        return int(expire) * unit
+%>
+<%def name="basic_block(block, must_exist_uri=None)"><%
+    passthru = block.get("passthru")
+    index = block.get("index")
+    allow = block.get("allow", True)
+    expires = block.get("expires")
+    headers = block.get("headers", {})
+
+    expires_sec = expires_to_seconds(expires)
+    compress = block.get("compress", expires_sec > 0)
+    if must_exist_uri is None:
+      must_exist_uri = "$uri"
+
+    rewrite_path = None
+    rewrite_querystring = None
+    if passthru is True:
+        if nginx["upstream_protocol"] != "fastcgi":
+            passthru_loc_name = "app"
+        else:
+            passthru = False
+    elif passthru:
+        # For normal passthru paths, we use named locations to work around a
+        # bug in try_files fallback arguments that occurs when aliases are
+        # used. See https://trac.nginx.org/nginx/ticket/176 for the actual
+        # issue.
+        if "?" in passthru:
+            passthru_loc_name = "rewrite_qs"
+            (rewrite_path, rewrite_querystring) = passthru.split("?", 1)
+        else:
+            passthru_loc_name = "rewrite"
+            rewrite_path = passthru
+
+    tried_files = []
+    if allow and must_exist_uri is not None:
+        tried_files.append(must_exist_uri)
+    if index is not None:
+        tried_files.append("$uri/")
+%>
+% if passthru:
+    % if rewrite_path:
+        set $_rewrite_path "${rewrite_path}";
+    % endif
+    % if rewrite_querystring:
+        set $_rewrite_querystring "${rewrite_querystring}";
+    % endif
+    % if tried_files:
+        try_files       ${" ".join(tried_files)} @${passthru_loc_name};
+    % else:
+        # The rewrite directive doesn't support named locations, while
+        # try_files requires at least one non-fallback argument. If we don't
+        # already have one, use a dummy argument to allow us to redirect to a
+        # named location that rewrites to the passthru.
+        try_files da39a3ee5e6b4b0d3255bfef95601890afd80709.nonexistent @${passthru_loc_name};
+    % endif
+% else:
+    % if tried_files:
+        try_files       ${" ".join(tried_files)} =404;
+    % else:
+        return          404;
+    % endif
+% endif
+% if index is not None:
+        index           ${" ".join(index)};
+% endif
+% if expires is not None:
+        expires         ${expires};
+% endif
+% if compress:
+        gzip            on;
+        brotli          on;
+% endif
+% for k, v in headers.iteritems():
+        more_set_headers "${k}: ${v}";
+% endfor
+</%def>
+<%def name="script_location(block)"><%
+    if "_document_root" in block:
+      document_root = block.get("_document_root")
+      if document_root:
+        document_root = document_root.rstrip("/")
+    else:
+      document_root = None
+  %>
+      % if nginx["upstream_protocol"] == "fastcgi" and block["scripts"]:
+      location ~ "${nginx["scripts_regexp"]}" {
+        ${basic_block(
+            override(block, allow=True, expires=None, compress=False, headers={}),
+            must_exist_uri="$fastcgi_script_name"
+        )}
+
+        fastcgi_pass    ${nginx["upstream_address"]};
+
+        % if document_root is not None:
+        set $_document_root ${nginx["root"]}/${document_root}/;
+        % else:
+        set $_document_root $document_root;
+        % endif
+
+        % if nginx["preflight_block_policy"] == "PARTIAL":
+        include         "fastcgi_params.locked";
+        # Force disable caching since we are mangling what the app received.
+        expires         epoch;
+        if ($request_method != "GET") {
+          return        405;
+        }
+        % else:
+        include         "fastcgi_params.normal";
+        % endif
+
+        # Split the script name from the path info, set it as a variable so
+        # that it persists after try_files has resolved the actual filename.
+        fastcgi_split_path_info ${"^(%s)((?:/.*)?)$" % nginx["scripts_regexp"]};
+        set $path_info  $fastcgi_path_info;
+      }
+      % endif
+</%def>
+
+user web;
+worker_processes 1;
+pid /run/nginx.pid;
+
+events {
+  worker_connections 768;
+}
+
+http {
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
+  keepalive_timeout 65;
+  types_hash_max_size 2048;
+  server_tokens off;
+
+  include /etc/nginx/mime.types;
+  types {
+    application/vnd.apple.pkpass pkpass;
+  }
+  default_type application/octet-stream;
+
+  access_log /var/log/access.log combined;
+  error_log /var/log/error.log;
+
+  # Set $remote_addr from our X-Client-IP header.
+  real_ip_header X-Client-IP;
+  set_real_ip_from 0.0.0.0/0;
+
+  # Force nginx to only generate relative redirects.
+  absolute_redirect off;
+
+  # Tracking headers.
+  more_set_headers "${nginx["headers_prefix"]}Processor: ${name}";
+  # Remove the server header completely.
+  more_set_headers "Server:";
+
+  % if nginx["policy"]:
+  include "/etc/nginx/rules/${nginx["policy"]}/${nginx["policy"]}.rules";
+  % endif
+
+  # Disable buffering of the *request* (\o/ thanks nginx 1.7.1).
+  proxy_request_buffering off;
+  fastcgi_request_buffering off;
+  # Do not limit the body size.
+  client_max_body_size 0;
+  client_body_buffer_size 128k;
+
+  # Enable in-memory buffering of the *response*.
+  proxy_buffering on;
+  fastcgi_buffering on;
+  # Increase the size of the initial buffer, used to read the response header.
+  proxy_buffer_size 32k;
+  fastcgi_buffer_size 32k;
+  proxy_buffers 128 4k;
+  fastcgi_buffers 128 4k;
+  proxy_busy_buffers_size 32k;
+  fastcgi_busy_buffers_size 32k;
+  # Disable on-disk buffering.
+  proxy_max_temp_file_size 0;
+  fastcgi_max_temp_file_size 0;
+
+  # Timeouts.
+  # We timeout after 30s if the application cannot start processing the request...
+  proxy_connect_timeout     30s;
+  fastcgi_connect_timeout   30s;
+  # ... but once the application started processing, we essentially never timeout.
+  proxy_read_timeout        86400s;
+  fastcgi_read_timeout      86400s;
+  proxy_send_timeout        86400s;
+  fastcgi_send_timeout      86400s;
+
+  # Ignore all special upstream headers.
+  proxy_ignore_headers X-Accel-Redirect X-Accel-Expires X-Accel-Limit-Rate
+    X-Accel-Buffering X-Accel-Charset Expires Cache-Control Set-Cookie Vary;
+  fastcgi_ignore_headers X-Accel-Redirect X-Accel-Expires X-Accel-Limit-Rate
+    X-Accel-Buffering X-Accel-Charset Expires Cache-Control Set-Cookie Vary;
+
+  client_body_temp_path /tmp/nginx/client_temp;
+  proxy_temp_path /tmp/nginx/proxy_temp;
+  fastcgi_temp_path /tmp/nginx/fastcgi_temp;
+  uwsgi_temp_path /tmp/nginx/uwsgi_temp;
+  scgi_temp_path /tmp/nginx/scgi_temp;
+
+  map $http_x_client_ssl $platform_server_port {
+    "on"      443;
+    default   80;
+  }
+
+  # If the request has a Upgrade header, set Connection to "upgrade",
+  # else force it as "Connection: close" to force the upstream to close the
+  # connection.
+  map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+  }
+
+  server {
+    listen 80 default_server;
+
+    gzip_static on;
+    gzip_http_version 1.0;
+    gzip_proxied any;
+    gzip_vary on;
+    gzip_comp_level 1;
+    gzip_types application/ecmascript application/javascript application/json;
+    gzip_types application/pdf application/postscript application/x-javascript;
+    gzip_types image/svg+xml text/css text/csv text/javascript text/plain text/xml;
+
+    brotli_static on;
+    brotli_comp_level 3;  # Equivalent to gzip level 1, but often with a higher compression ratio.
+    brotli_types application/ecmascript application/javascript application/json;
+    brotli_types application/pdf application/postscript application/x-javascript;
+    brotli_types image/svg+xml text/css text/csv text/javascript text/plain text/xml;
+
+    # Avoid a configuration parse error when no passthru is used.
+    set $_rewrite_path "";
+    set $_rewrite_querystring "";
+    location @rewrite {
+          rewrite . $_rewrite_path;
+    }
+    location @rewrite_qs {
+          rewrite . $_rewrite_path?$_rewrite_querystring;
+    }
+
+  % if nginx["upstream_protocol"] == "http":
+    # Forward request to the application.
+    location @app {
+      internal;
+      % if nginx["upstream_address"].startswith('unix:/'):
+      proxy_pass http://${nginx["upstream_address"]};
+      % else:
+      proxy_pass http://${nginx["upstream_address"]};
+      % endif
+
+      proxy_http_version 1.1;
+      proxy_set_header Host $host;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection $connection_upgrade;
+    }
+  % endif
+
+  % if nginx["preflight_block_policy"] == "FULL":
+    location / {
+      return          405;
+    }
+  % else:
+
+    % for prefix, block in nginx["location_blocks"].iteritems():
+      <%
+        block_root = block.get("root")
+        if block_root is None and prefix == "/":
+          block_root = "__invalid__"
+        if block_root:
+          block_root = block_root.rstrip('/')
+
+        prefix = prefix.rstrip('/')
+      %>
+    location = "${prefix}" {
+      % if block_root == "":
+      alias ${nginx["root"]};
+      % elif block_root is not None:
+      alias ${nginx["root"]}/${block_root};
+      % endif
+
+      ${basic_block(block)}
+    }
+    location "${prefix}/" {
+      % if block_root == "":
+      alias ${nginx["root"]}/;
+      % elif block_root is not None:
+      alias ${nginx["root"]}/${block_root}/;
+      % endif
+
+      location "${prefix}/" {
+          ${basic_block(block)}
+      }
+
+      % for rule_match, rule_block in block["rules"].iteritems():
+      location ~ "${rule_match}" {
+        ${script_location(override(block, rule_block))}
+        location ~ "${rule_match}" {
+          ## Wrapped in a dummy location as it can contain more_set_headers statements
+          ## that would also affect the script location above.
+          ${basic_block(override(block, rule_block))}
+        }
+      }
+      % endfor
+
+      ${script_location(block)}
+    }
+    % endfor
+  % endif
+
+    # Error pages.
+  % for code in nginx["error_codes"]:
+    error_page ${code} /_/errors/${code}.html;
+  % endfor
+
+    location "/_/errors" {
+      internal;
+      alias /run/errors;
+    }
+  }
+}
+% endif

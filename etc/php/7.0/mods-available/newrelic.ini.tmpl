@@ -1,0 +1,5 @@
+extension = "/usr/lib/newrelic-php5/agent/x64/newrelic-20151012.so"
+newrelic.daemon.port = "/run/newrelic.sock"
+newrelic.logfile = "/var/log/app.log"
+newrelic.appname = "${identity["cluster"]}.${identity["service"]}"
+newrelic.daemon.dont_launch = 3

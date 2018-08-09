@@ -1,0 +1,47 @@
+##
+## Locked configuration.
+##
+
+# In this emergency configuration, we strip most of the incoming request
+# and only send the application trusted headers.
+
+fastcgi_pass_request_headers off;
+fastcgi_pass_request_body off;
+
+fastcgi_param    QUERY_STRING           "";
+fastcgi_param    REQUEST_METHOD         "GET";
+fastcgi_param    CONTENT_TYPE           "";
+fastcgi_param    CONTENT_LENGTH         "";
+
+fastcgi_param    SCRIPT_FILENAME        $document_root$fastcgi_script_name;
+fastcgi_param    SCRIPT_NAME            $fastcgi_script_name;
+fastcgi_param    PATH_INFO              $path_info;
+fastcgi_param    REQUEST_URI            $original_uri;
+fastcgi_param    DOCUMENT_URI           $original_uri;
+fastcgi_param    DOCUMENT_ROOT          $document_root;
+fastcgi_param    SERVER_PROTOCOL        $server_protocol;
+
+fastcgi_param    GATEWAY_INTERFACE      CGI/1.1;
+fastcgi_param    SERVER_SOFTWARE        nginx;
+
+# The host header is enforced by the router.
+fastcgi_param    HTTP_HOST              $http_host;
+
+# Get the remote address directly from X-Client-IP, that avoids the need for
+# the application to know about our architecture.
+fastcgi_param    REMOTE_ADDR            $http_x_client_ip;
+# We drop REMOTE_PORT which is meaningless in our architecture.
+fastcgi_param    SERVER_ADDR            $server_addr;
+fastcgi_param    SERVER_PORT            $platform_server_port;
+fastcgi_param    SERVER_NAME            $server_name;
+
+# Get the HTTPS flag from the X-Client-SSL header.
+fastcgi_param    HTTPS                  $http_x_client_ssl;
+
+# Required for some FastCGI applications (like PHP), that are trying to protect
+# themselves around some old CGI attacks. See http://php.net/manual/en/security.cgi-bin.force-redirect.php
+fastcgi_param    REDIRECT_STATUS        200;
+
+# Some applications (e.g. Pagekit) stupidly leverage the HTTP_MOD_REWRITE header
+# added by Apache mod_rewrite to chose the URL format.
+fastcgi_param    HTTP_MOD_REWRITE       On;
