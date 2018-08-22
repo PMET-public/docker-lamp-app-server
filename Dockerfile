@@ -52,8 +52,6 @@ RUN curl -S https://packagecloud.io/gpg.key | sudo apt-key add - && \
   (find /usr/lib/php -name "xdebug.so" | sort | tail -1 | sed 's/^/zend_extension=/' > /etc/php/7.1/mods-available/xdebug.ini) && \
   phpdismod xdebug && \
   phpenmod opcache && \
-  printf "#!/bin/sh\n/etc/init.d/blackfire-agent start\n" > /etc/my_init.d/blackfire.sh && \
-  chmod +x /etc/my_init.d/blackfire.sh && \
   apt-get --purge autoremove -y && \
   apt-get clean && \
   rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
